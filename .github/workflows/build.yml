@@ -29,14 +29,21 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # ضبط إعدادات buildozer.spec بشكل صحيح وآمن
+          # تعديل إعدادات buildozer.spec لتحديد إصدارات مستقرة وقبول التراخيص تلقائياً
           sed -i 's/#requirements = python3,requests/requirements = python3,requests/g' buildozer.spec
           sed -i 's/package.name = myapp/package.name = telegrammonitor/g' buildozer.spec
           sed -i 's/package.domain = org.example/package.domain = com.telebot/g' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
           sed -i 's/android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
+          sed -i 's/#android.api = 31/android.api = 33/g' buildozer.spec
+          sed -i 's/android.api =.*/android.api = 33/g' buildozer.spec
+          sed -i 's/android.minapi =.*/android.minapi = 21/g' buildozer.spec
           
-          # تشغيل البناء بالطريقة الصحيحة دون استخدام أمر yes المسبب للخطأ
+          # إنشاء مجلد التراخيص يدويًا لمنع خطأ رفض الترخيص نهائياً
+          mkdir -p ~/.buildozer/android/platform/android-sdk
+          yes | sdkmanager --licenses || true
+          
+          # بدء البناء
           buildozer -v android debug
 
       - name: Upload APK Artifact
