@@ -16,43 +16,14 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            python3-pip \
-            build-essential \
-            git \
-            python3-dev \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libffi-dev \
-            libssl-dev \
-            openjdk-17-jdk
+          sudo apt-get install -y python3-pip build-essential libffi-dev libssl-dev python3-dev openjdk-17-jdk
           pip install --upgrade pip
-          pip install --upgrade cython==0.29.36 buildozer requests
+          pip install requests buildozer Cython==0.29.36
 
-      - name: Initialize Buildozer Spec
-        run: |
-          buildozer init || true
-          # ضبط الإعدادات الأساسية تلقائياً داخل الملف
-          sed -i 's/#requirements = python3,requests/requirements = python3,requests/g' buildozer.spec
-          sed -i 's/package.name = myapp/package.name = telegrammonitor/g' buildozer.spec
-          sed -i 's/package.domain = org.example/package.domain = com.telebot/g' buildozer.spec
-          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
-          sed -i 's/android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
-          sed -i 's/#android.api = 31/android.api = 33/g' buildozer.spec
-          sed -i 's/android.api =.*/android.api = 33/g' buildozer.spec
-
-      - name: Build APK
+      - name: Build APK with Buildozer
         run: |
           buildozer -v android debug
 
