@@ -29,14 +29,15 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # تعديل إعدادات البناء لطلب الحزم الصحيحة والموافقة على التراخيص تلقائياً
+          # ضبط إعدادات buildozer.spec بشكل صحيح وآمن
           sed -i 's/#requirements = python3,requests/requirements = python3,requests/g' buildozer.spec
           sed -i 's/package.name = myapp/package.name = telegrammonitor/g' buildozer.spec
           sed -i 's/package.domain = org.example/package.domain = com.telebot/g' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
+          sed -i 's/android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
           
-          # بدء عملية تجميع وبناء الـ APK مع قبول التراخيص الإجبارية
-          yes | buildozer -v android debug
+          # تشغيل البناء بالطريقة الصحيحة دون استخدام أمر yes المسبب للخطأ
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
