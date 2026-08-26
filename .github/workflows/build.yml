@@ -19,7 +19,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip build-essential libffi-dev libssl-dev python3-dev
+          sudo apt-get install -y python3-pip build-essential libffi-dev libssl-dev python3-dev openjdk-17-jdk
           pip install --upgrade pip
           pip install requests buildozer Cython==0.29.36
 
@@ -29,13 +29,14 @@ jobs:
 
       - name: Build APK with Buildozer
         run: |
-          # تعديل إعدادات البناء تلقائياً ليتوافق مع سكربت بايثون الخاص بنا
+          # تعديل إعدادات البناء لطلب الحزم الصحيحة والموافقة على التراخيص تلقائياً
           sed -i 's/#requirements = python3,requests/requirements = python3,requests/g' buildozer.spec
           sed -i 's/package.name = myapp/package.name = telegrammonitor/g' buildozer.spec
           sed -i 's/package.domain = org.example/package.domain = com.telebot/g' buildozer.spec
+          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
           
-          # بدء عملية تجميع وبناء الـ APK
-          buildozer -v android debug
+          # بدء عملية تجميع وبناء الـ APK مع قبول التراخيص الإجبارية
+          yes | buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
